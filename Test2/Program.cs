@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HM1
+namespace Test2
 {
     class Program
     {
