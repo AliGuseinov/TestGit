@@ -12,11 +12,11 @@ namespace HM2ArrayofArr
             int j = 0; //объявление и инициализация переменной j
             while (i < array.Length) //цикл пока i меньше длины массива массивов 
             {
-                array[i] = new int[rnd.Next()];
+                array[i] = new int[rnd.Next()];//заполнение массива i-го элемента случайными числами
                 j = 0;//обнуление j
-                while (j < array.Length)// цикл пока j меньше длины массива i элемента
+                while (j < array.Length)// цикл пока j меньше длины массива
                 {
-                    array[j] = new int[rnd.Next()];
+                    
                     array[i][j] = rnd.Next();//заполнение j-ого элемента i-ого массива 
                     Console.WriteLine(array[i][j]);//вывод на экран массива j-ого элемента i-ого массива
                     j++;//увеличение j на 1
