@@ -6,21 +6,22 @@ namespace HM2ArrayofArr
     {
         static void Main(string[] args)
         {
-            int[][] array = new int[10][];
-            Random rnd = new Random();
-            int i = 0;
-            int j = 0;
-            while (i < array.Length)
+            int[][] array = new int[10][]; //объявление и инициализация массива массивов целых чисел массивом из 10 массивов целых чисел
+            Random rnd = new Random(); //объявление переменной rnd
+            int i = 0; //объявление и инициализация переменной i
+            int j = 0; //объявление и инициализация переменной j
+            while (i < array.Length) //цикл пока i меньше длины массива массивов 
             {
-                array[i] = new int[10];
-                j = 0;
-                while (j < array[i].Length)
+                array[i] = new int[rnd.Next()];
+                j = 0;//обнуление j
+                while (j < array.Length)// цикл пока j меньше длины массива i элемента
                 {
-                    array[i][j] = rnd.Next();
-                    Console.WriteLine(array[i][j]);
-                    j++;
+                    array[j] = new int[rnd.Next()];
+                    array[i][j] = rnd.Next();//заполнение j-ого элемента i-ого массива 
+                    Console.WriteLine(array[i][j]);//вывод на экран массива j-ого элемента i-ого массива
+                    j++;//увеличение j на 1
                 }
-                i++;
+                i++;//увеличение i на 1
             }
         }
     }
