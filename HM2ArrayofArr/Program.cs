@@ -14,15 +14,27 @@ namespace HM2ArrayofArr
             {
                 array[i] = new int[rnd.Next()];//заполнение массива i-го элемента случайными числами
                 j = 0;//обнуление j
-                while (j < array.Length)// цикл пока j меньше длины массива
+                while (j < array[i].Length)// цикл пока j меньше длины массива
                 {
-                    
                     array[i][j] = rnd.Next();//заполнение j-ого элемента i-ого массива 
                     Console.WriteLine(array[i][j]);//вывод на экран массива j-ого элемента i-ого массива
                     j++;//увеличение j на 1
                 }
                 i++;//увеличение i на 1
             }
+
+            while (i < array.Length) 
+            {
+                
+                j = 0;
+                while (j < array[i].Length) 
+                {
+                    Console.WriteLine(array[i][j]);
+                    j++;
+                }
+                i++;
+            }
+
         }
     }
 }
