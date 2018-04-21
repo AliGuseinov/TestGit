@@ -113,6 +113,9 @@ namespace HomeWork
             }
 
             string RouteLine = "";
+            if (RouteLine==null){
+                throw new FileFormatException("В файле нет маршрутов");
+            }
             ArrayList RoutesText = new ArrayList();
             while (RouteLine != null)
             {
@@ -123,6 +126,12 @@ namespace HomeWork
             dataReader.Close();
 
             string[] StationNames = StationText.Split(",");
+            int m = 0;
+            while(m<StationNames.Length){
+                if(StationNames[m]!= "Names"){
+                    throw new FileFormatException("В файле нет названий станций");
+                }
+            }
             ListOfStations = new List<Station>();
             i = 0;
             while(i<StationNames.Length) {
