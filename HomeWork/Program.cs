@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using System.IO;
+using System.Collections;
 namespace HomeWork
 {
     class Station
@@ -25,6 +26,8 @@ namespace HomeWork
         //интервал движения
         public TimeSpan Interval { get; private set; }
 
+        StationsGraph stationGraph;
+
         public Route(DateTime timeStart, DateTime timeEnd, TimeSpan interval){
             TimeStart = timeStart;
             TimeEnd = timeEnd;
@@ -39,13 +42,35 @@ namespace HomeWork
             Interval = interval;
 
             Stations = stations;
+
+            //stationGraph = new StationsGraph();
         }
     }
 
-    //class StationsGraph
-    //{
-        
-    //}
+    class StationsGraph
+    {
+        byte[,] matrix;
+
+        public StationsGraph(List<Station> allStations, List<Station> selectedStations){
+            matrix = new byte[allStations.Count, allStations.Count];
+            int i = 0;
+            int j = 0;
+
+            while(i<matrix.GetLength(0)){
+                j = 0;
+                while(j<matrix.GetLength(1))
+                {
+                    matrix[i, j] = (byte)(
+                        (
+                            i <  (allStations.Count - 1) &&
+                            selectedStations.IndexOf(allStations[i]) != -1 &&
+                            selectedStations.IndexOf(allStations[i + 1]) != -1
+                        ) ? 1 : 0
+                    );
+                }
+            }
+        }
+    }
 
     //class ScheduleSearcher
     //{
@@ -54,28 +79,77 @@ namespace HomeWork
 
     class Program
     {
+        class IOException: Exception{
+            public IOException(string Message) : base(Message) { }
+        }
+        class FileFormatException: Exception{
+            public FileFormatException(string Message) : base(Message){}
+        }
+        public static void FileReader(out List<Station> ListOfStations, out List<Route> ListOfRoutes )
+        {
+            StreamReader dataReader;
+            int i;
+            try
+            {
+                dataReader = new StreamReader("/Users/aliguseinov/data.txt");
+            }
+            catch(System.IO.IOException e) {
+                throw new IOException(e.Message);
+            }
+
+            string StationTitle = dataReader.ReadLine();
+            if(StationTitle != "Stations"){
+                throw new FileFormatException("В файле нет станций");
+            }
+
+            string StationText = dataReader.ReadLine();
+            if((StationText == null)| (StationText=="")){
+                throw new FileFormatException("В файле нет станций");
+            }
+
+            string RoutesTitle = dataReader.ReadLine();
+            if(RoutesTitle != "Routes"){
+                throw new FileFormatException("В файле нет маршрутов");
+            }
+
+            string RouteLine = "";
+            ArrayList RoutesText = new ArrayList();
+            while (RouteLine != null)
+            {
+                RouteLine = dataReader.ReadLine();
+                if (RouteLine != null)
+                    RoutesText.Add(RouteLine);
+            }
+            dataReader.Close();
+
+            string[] StationNames = StationText.Split(",");
+            ListOfStations = new List<Station>();
+            i = 0;
+            while(i<StationNames.Length) {
+                ListOfStations.Add(new Station(StationNames[i]));
+                i++;
+            }
+
+            ListOfRoutes = new List<Route>();
+        }
+
         static void Main(string[] args)
         {
-            Station station = new Station("белорусская");
-            List<Station> stations = new List<Station>();
-            stations.Add(station);
-
-            Route route1 = new Route(
-                new DateTime(2018, 3, 12, 8, 0, 0),
-                new DateTime(2018, 3, 12, 23, 0, 0),
-                new TimeSpan(0, 10, 0)
-            );
-            route1.Stations.Add(station);
-
-            Route route2 = new Route(
-                new DateTime(2018, 3, 12, 8, 0, 0),
-                new DateTime(2018, 3, 12, 23, 0, 0),
-                new TimeSpan(0, 10, 0),
-                stations
-            );
-
-            Console.WriteLine(station);
-            Console.WriteLine(route1);
+            List<Station> ListofStations = new List<Station>();
+            List<Route> ListofRoutes = new List<Route>();
+            try
+            {
+                FileReader(out ListofStations, out ListofRoutes);
+            }
+            catch(IOException ex){
+                Console.WriteLine("Произошла ошибка ввода и вывода:" + ex.Message );
+            }
+            catch(FileFormatException ex){
+                Console.WriteLine("Неверный формат файла:" + ex.Message);
+            }
+            Console.WriteLine(ListofStations);
+            Console.WriteLine(ListofRoutes);
         }
+
     }
 }
