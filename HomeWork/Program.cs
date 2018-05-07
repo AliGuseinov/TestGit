@@ -47,6 +47,31 @@ namespace HomeWork
         }
     }
 
+    class Schedule
+    {
+        //Маршрут
+        public Route ScheduleRoute { get; private set; }
+        //Время
+        public DateTime ScheduleTime { get; private set; }
+
+        public Schedule(Route scheduleRoute, DateTime scheduleTime)
+        {
+            ScheduleRoute = scheduleRoute;
+            ScheduleTime = scheduleTime;
+        }
+
+        static public List<Schedule> compute(List<Route> listOfRoutes,
+                                       Station currentStation,
+                                       DateTime currentTime) {
+            List<Route> routesWithCurrentStation = listOfRoutes.FindAll(
+                new Predicate<Route>((route) => route.Stations.Contains(currentStation))
+            );
+
+            //для выбранных маршрутов найти ближайшее время отправления
+            //сформировать список расписаний
+        }
+    }
+
     class StationsGraph
     {
         byte[,] matrix;
@@ -85,7 +110,8 @@ namespace HomeWork
         class FileFormatException: Exception{
             public FileFormatException(string Message) : base(Message){}
         }
-        public static void FileReader(out List<Station> ListOfStations, out List<Route> ListOfRoutes )
+
+        public static void FileReader(out List<Station> ListOfStations, out List<Route> ListOfRoutes)
         {
             StreamReader dataReader;
             int i;
@@ -93,30 +119,35 @@ namespace HomeWork
             {
                 dataReader = new StreamReader("/Users/aliguseinov/data.txt");
             }
-            catch(System.IO.IOException e) {
+            catch (System.IO.IOException e)
+            {
                 throw new IOException(e.Message);
             }
 
             string StationTitle = dataReader.ReadLine();
-            if(StationTitle != "Stations"){
+            if (StationTitle != "Stations")
+            {
                 throw new FileFormatException("В файле нет станций");
             }
 
             string StationText = dataReader.ReadLine();
-            if((StationText == null)| (StationText=="")){
+            if ((StationText == null) | (StationText == ""))
+            {
                 throw new FileFormatException("В файле нет станций");
             }
 
             string RoutesTitle = dataReader.ReadLine();
-            if(RoutesTitle != "Routes"){
+            if (RoutesTitle != "Routes")
+            {
                 throw new FileFormatException("В файле нет маршрутов");
             }
 
             string RouteLine = "";
-            if (RouteLine==null){
+            if (RouteLine == null)
+            {
                 throw new FileFormatException("В файле нет маршрутов");
             }
-            ArrayList RoutesText = new ArrayList();
+            List<string> RoutesText = new List<string>();
             while (RouteLine != null)
             {
                 RouteLine = dataReader.ReadLine();
@@ -127,19 +158,51 @@ namespace HomeWork
 
             string[] StationNames = StationText.Split(",");
             int m = 0;
-            while(m<StationNames.Length){
-                if(StationNames[m]!= "Names"){
+            while (m < StationNames.Length)
+            {
+                if (StationNames[m] != "")
+                {
                     throw new FileFormatException("В файле нет названий станций");
                 }
             }
             ListOfStations = new List<Station>();
             i = 0;
-            while(i<StationNames.Length) {
+            while (i < StationNames.Length)
+            {
                 ListOfStations.Add(new Station(StationNames[i]));
                 i++;
             }
 
             ListOfRoutes = new List<Route>();
+            i = 0;
+            while (i < RoutesText.Count)
+            {
+                string[] RouteParts = RoutesText[i].Split(";");
+
+                Route route = new Route(
+                    DateTime.Parse(RouteParts[0]),
+                    DateTime.Parse(RouteParts[1]),
+                    TimeSpan.Parse(RouteParts[2])
+                );
+
+                string[] RouteStationsText = RouteParts[3].Split("-");
+                List<Station> RouteStations = new List<Station>();
+                int j = 0;
+                while (j < RouteStationsText.Length)
+                {
+                    RouteStations.Add(
+                        ListOfStations.Find(
+                            new Predicate<Station>((station) => station.Name == RouteStationsText[j])
+                        )
+                    );
+
+                    j++;
+                }
+                route.Stations = RouteStations;
+
+                ListOfRoutes.Add(route);
+                i++;
+            }
         }
 
         static void Main(string[] args)
@@ -156,8 +219,12 @@ namespace HomeWork
             catch(FileFormatException ex){
                 Console.WriteLine("Неверный формат файла:" + ex.Message);
             }
-            Console.WriteLine(ListofStations);
-            Console.WriteLine(ListofRoutes);
+
+            Station currentStation = ListofStations[2];
+            DateTime currentTime = new DateTime(2018, 01, 01, 12, 09, 00);
+
+            List<Schedule> schedules = Schedule.compute(ListofRoutes, currentStation, currentTime);
+
         }
 
     }
