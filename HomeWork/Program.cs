@@ -26,7 +26,7 @@ namespace HomeWork
         //интервал движения
         public TimeSpan Interval { get; private set; }
 
-        StationsGraph stationGraph;
+        //StationsGraph stationGraph;
 
         public Route(DateTime timeStart, DateTime timeEnd, TimeSpan interval){
             TimeStart = timeStart;
@@ -60,7 +60,7 @@ namespace HomeWork
             ScheduleTime = scheduleTime;
         }
 
-        static public List<Schedule> compute(List<Route> listOfRoutes,
+        static public List<Schedule> Сompute(List<Route> listOfRoutes,
                                        Station currentStation,
                                        DateTime currentTime) {
             List<Route> routesWithCurrentStation = listOfRoutes.FindAll(
@@ -68,34 +68,53 @@ namespace HomeWork
             );
 
             //для выбранных маршрутов найти ближайшее время отправления
-            //сформировать список расписаний
-        }
-    }
-
-    class StationsGraph
-    {
-        byte[,] matrix;
-
-        public StationsGraph(List<Station> allStations, List<Station> selectedStations){
-            matrix = new byte[allStations.Count, allStations.Count];
+            List<Schedule> schedules = new List<Schedule>();
             int i = 0;
-            int j = 0;
+            while(i<routesWithCurrentStation.Count){
+                Route currentRoute = routesWithCurrentStation[i];
+                List<Station> routeStaions = currentRoute.Stations;
 
-            while(i<matrix.GetLength(0)){
-                j = 0;
-                while(j<matrix.GetLength(1))
-                {
-                    matrix[i, j] = (byte)(
-                        (
-                            i <  (allStations.Count - 1) &&
-                            selectedStations.IndexOf(allStations[i]) != -1 &&
-                            selectedStations.IndexOf(allStations[i + 1]) != -1
-                        ) ? 1 : 0
-                    );
-                }
+                int stationNum = routeStaions.IndexOf(currentStation);
+                DateTime firstArriveTime = currentRoute.TimeStart + stationNum * currentRoute.Interval;
+                schedules.Add(new Schedule(currentRoute, FindNearestTime(currentTime, currentRoute.Interval, firstArriveTime)));
             }
+
+            return schedules;
+        }
+
+        static private DateTime FindNearestTime(DateTime currentTime, TimeSpan interval, DateTime TimeStart){
+            DateTime departureTime = TimeStart;
+            while(departureTime < currentTime){
+                departureTime = departureTime + interval;
+            }
+            return departureTime;
         }
     }
+
+    //class StationsGraph
+    //{
+    //    byte[,] matrix;
+
+    //    public StationsGraph(List<Station> allStations, List<Station> selectedStations){
+    //        matrix = new byte[allStations.Count, allStations.Count];
+    //        int i = 0;
+    //        int j = 0;
+
+    //        while(i<matrix.GetLength(0)){
+    //            j = 0;
+    //            while(j<matrix.GetLength(1))
+    //            {
+    //                matrix[i, j] = (byte)(
+    //                    (
+    //                        i <  (allStations.Count - 1) &&
+    //                        selectedStations.IndexOf(allStations[i]) != -1 &&
+    //                        selectedStations.IndexOf(allStations[i + 1]) != -1
+    //                    ) ? 1 : 0
+    //                );
+    //            }
+    //        }
+    //    }
+    //}
 
     //class ScheduleSearcher
     //{
@@ -223,8 +242,9 @@ namespace HomeWork
             Station currentStation = ListofStations[2];
             DateTime currentTime = new DateTime(2018, 01, 01, 12, 09, 00);
 
-            List<Schedule> schedules = Schedule.compute(ListofRoutes, currentStation, currentTime);
+            List<Schedule> schedules = Schedule.Сompute(ListofRoutes, currentStation, currentTime);
 
+            //вывести результаты
         }
 
     }
