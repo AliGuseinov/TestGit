@@ -179,10 +179,11 @@ namespace HomeWork
             int m = 0;
             while (m < StationNames.Length)
             {
-                if (StationNames[m] != "")
+                if (StationNames[m] == "")
                 {
                     throw new FileFormatException("В файле нет названий станций");
                 }
+                m++;
             }
             ListOfStations = new List<Station>();
             i = 0;
@@ -204,7 +205,7 @@ namespace HomeWork
                     TimeSpan.Parse(RouteParts[2])
                 );
 
-                string[] RouteStationsText = RouteParts[3].Split("-");
+                string[] RouteStationsText = RouteParts[3].Split(",");
                 List<Station> RouteStations = new List<Station>();
                 int j = 0;
                 while (j < RouteStationsText.Length)
@@ -222,7 +223,21 @@ namespace HomeWork
                 ListOfRoutes.Add(route);
                 i++;
             }
+             
         }
+        //public static void FileWriter(out List<Station> ListOfStations, out List<Route> ListOfRoutes){
+            //StreamWriter dataWriter;
+
+                //dataWriter = new StreamWriter("/Users/aliguseinov/fileExample/data.txt");
+            //string StationTitle = dataWriter.WriteLine();
+
+            //string StationText = dataWriter.WriteLine();
+
+            //string RoutesTitle = dataWriter.WriteLine();
+
+           
+
+
 
         static void Main(string[] args)
         {
@@ -243,8 +258,20 @@ namespace HomeWork
             DateTime currentTime = new DateTime(2018, 01, 01, 12, 09, 00);
 
             List<Schedule> schedules = Schedule.Сompute(ListofRoutes, currentStation, currentTime);
+            Console.WriteLine(schedules);
+            string[] lines = new string[schedules.Count];
+            int i;
+            i = 0;
+            while(i<schedules.Count){
+                lines[i] = schedules[i].ToString();
+                i++;
+            }
+            System.IO.File.WriteAllLines("/Users/aliguseinov/fileExample/file1.txt", lines);
+            //Console.WriteLine(Schedule.Сompute(ListofRoutes,currentStation, currentTime));
+            //Console.WriteLine(FileReader());
 
             //вывести результаты
+
         }
 
     }
