@@ -77,18 +77,23 @@ namespace HomeWork
                 int stationNum = routeStaions.IndexOf(currentStation);
                 DateTime firstArriveTime = currentRoute.TimeStart + stationNum * currentRoute.Interval;
                 schedules.Add(new Schedule(currentRoute, FindNearestTime(currentTime, currentRoute.Interval, firstArriveTime)));
+                schedules.ToString();
             }
 
             return schedules;
+
         }
 
         static private DateTime FindNearestTime(DateTime currentTime, TimeSpan interval, DateTime TimeStart){
             DateTime departureTime = TimeStart;
             while(departureTime < currentTime){
                 departureTime = departureTime + interval;
+                departureTime.ToString();
             }
             return departureTime;
+
         }
+
     }
 
     //class StationsGraph
@@ -204,6 +209,7 @@ namespace HomeWork
                     DateTime.Parse(RouteParts[1]),
                     TimeSpan.Parse(RouteParts[2])
                 );
+                route.ToString();
 
                 string[] RouteStationsText = RouteParts[3].Split(",");
                 List<Station> RouteStations = new List<Station>();
@@ -266,6 +272,7 @@ namespace HomeWork
                 lines[i] = schedules[i].ToString();
                 i++;
             }
+
             System.IO.File.WriteAllLines("/Users/aliguseinov/fileExample/file1.txt", lines);
             //Console.WriteLine(Schedule.Сompute(ListofRoutes,currentStation, currentTime));
             //Console.WriteLine(FileReader());
