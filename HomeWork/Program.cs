@@ -9,8 +9,13 @@ namespace HomeWork
         //наименование
         public string Name { get; private set; }
 
-        public Station(string name){
+        public Station(string name)
+        {
             Name = name;
+        }
+        public override string ToString()
+        {
+            return string.Format("[Station: Name={0}]", Name);
         }
     }
 
@@ -26,9 +31,14 @@ namespace HomeWork
         //интервал движения
         public TimeSpan Interval { get; private set; }
 
+        public override string ToString()
+        {
+            return string.Format("[Route: Stations={0}, TimeStart={1}, TimeEnd={2}, Interval={3}]", Stations, TimeStart, TimeEnd, Interval);
+        }
         //StationsGraph stationGraph;
 
-        public Route(DateTime timeStart, DateTime timeEnd, TimeSpan interval){
+        public Route(DateTime timeStart, DateTime timeEnd, TimeSpan interval)
+        {
             TimeStart = timeStart;
             TimeEnd = timeEnd;
             Interval = interval;
@@ -36,7 +46,8 @@ namespace HomeWork
             Stations = new List<Station>();
         }
 
-        public Route(DateTime timeStart, DateTime timeEnd, TimeSpan interval, List<Station> stations){
+        public Route(DateTime timeStart, DateTime timeEnd, TimeSpan interval, List<Station> stations)
+        {
             TimeStart = timeStart;
             TimeEnd = timeEnd;
             Interval = interval;
@@ -60,9 +71,15 @@ namespace HomeWork
             ScheduleTime = scheduleTime;
         }
 
+        public override string ToString()
+        {
+            return string.Format("[Schedule: ScheduleRoute={0}, ScheduleTime={1}]", ScheduleRoute, ScheduleTime);
+        }
+
         static public List<Schedule> Сompute(List<Route> listOfRoutes,
                                        Station currentStation,
-                                       DateTime currentTime) {
+                                       DateTime currentTime)
+        {
             List<Route> routesWithCurrentStation = listOfRoutes.FindAll(
                 new Predicate<Route>((route) => route.Stations.Contains(currentStation))
             );
@@ -70,23 +87,26 @@ namespace HomeWork
             //для выбранных маршрутов найти ближайшее время отправления
             List<Schedule> schedules = new List<Schedule>();
             int i = 0;
-            while(i<routesWithCurrentStation.Count){
+            while (i < routesWithCurrentStation.Count)
+            {
                 Route currentRoute = routesWithCurrentStation[i];
                 List<Station> routeStaions = currentRoute.Stations;
 
                 int stationNum = routeStaions.IndexOf(currentStation);
                 DateTime firstArriveTime = currentRoute.TimeStart + stationNum * currentRoute.Interval;
                 schedules.Add(new Schedule(currentRoute, FindNearestTime(currentTime, currentRoute.Interval, firstArriveTime)));
-                schedules.ToString();
+                i++;
             }
 
             return schedules;
 
         }
 
-        static private DateTime FindNearestTime(DateTime currentTime, TimeSpan interval, DateTime TimeStart){
+        static private DateTime FindNearestTime(DateTime currentTime, TimeSpan interval, DateTime TimeStart)
+        {
             DateTime departureTime = TimeStart;
-            while(departureTime < currentTime){
+            while (departureTime < currentTime)
+            {
                 departureTime = departureTime + interval;
                 departureTime.ToString();
             }
@@ -123,17 +143,20 @@ namespace HomeWork
 
     //class ScheduleSearcher
     //{
-        
+
     //}
 
     class Program
     {
-        class IOException: Exception{
+        class IOException : Exception
+        {
             public IOException(string Message) : base(Message) { }
         }
-        class FileFormatException: Exception{
-            public FileFormatException(string Message) : base(Message){}
+        class FileFormatException : Exception
+        {
+            public FileFormatException(string Message) : base(Message) { }
         }
+
 
         public static void FileReader(out List<Station> ListOfStations, out List<Route> ListOfRoutes)
         {
@@ -209,7 +232,7 @@ namespace HomeWork
                     DateTime.Parse(RouteParts[1]),
                     TimeSpan.Parse(RouteParts[2])
                 );
-                route.ToString();
+
 
                 string[] RouteStationsText = RouteParts[3].Split(",");
                 List<Station> RouteStations = new List<Station>();
@@ -224,24 +247,25 @@ namespace HomeWork
 
                     j++;
                 }
+                //RouteStations.ToString();
                 route.Stations = RouteStations;
 
                 ListOfRoutes.Add(route);
                 i++;
             }
-             
+           
         }
         //public static void FileWriter(out List<Station> ListOfStations, out List<Route> ListOfRoutes){
-            //StreamWriter dataWriter;
+        //StreamWriter dataWriter;
 
-                //dataWriter = new StreamWriter("/Users/aliguseinov/fileExample/data.txt");
-            //string StationTitle = dataWriter.WriteLine();
+        //dataWriter = new StreamWriter("/Users/aliguseinov/fileExample/data.txt");
+        //string StationTitle = dataWriter.WriteLine();
 
-            //string StationText = dataWriter.WriteLine();
+        //string StationText = dataWriter.WriteLine();
 
-            //string RoutesTitle = dataWriter.WriteLine();
+        //string RoutesTitle = dataWriter.WriteLine();
 
-           
+
 
 
 
@@ -253,33 +277,60 @@ namespace HomeWork
             {
                 FileReader(out ListofStations, out ListofRoutes);
             }
-            catch(IOException ex){
-                Console.WriteLine("Произошла ошибка ввода и вывода:" + ex.Message );
+            catch (IOException ex)
+            {
+                Console.WriteLine("Произошла ошибка ввода и вывода:" + ex.Message);
             }
-            catch(FileFormatException ex){
+            catch (FileFormatException ex)
+            {
                 Console.WriteLine("Неверный формат файла:" + ex.Message);
             }
 
-            Station currentStation = ListofStations[2];
+            Station currentStation = ListofStations[0];
             DateTime currentTime = new DateTime(2018, 01, 01, 12, 09, 00);
 
             List<Schedule> schedules = Schedule.Сompute(ListofRoutes, currentStation, currentTime);
-            Console.WriteLine(schedules);
-            string[] lines = new string[schedules.Count];
-            int i;
-            i = 0;
+            int i = 0;
             while(i<schedules.Count){
-                lines[i] = schedules[i].ToString();
+                Console.WriteLine(schedules[i].ToString());
                 i++;
             }
+            ;
+            Console.WriteLine(schedules);
+            string[] lines = new string[schedules.Count];
+
+            i = 0;
+            while (i < schedules.Count)
+            {
+                lines[i] = schedules[i].ToString();
+                i++;
+            };
 
             System.IO.File.WriteAllLines("/Users/aliguseinov/fileExample/file1.txt", lines);
-            //Console.WriteLine(Schedule.Сompute(ListofRoutes,currentStation, currentTime));
-            //Console.WriteLine(FileReader());
-
-            //вывести результаты
 
         }
 
-    }
+            //вывести результаты
+        //string value = { "00:10" };
+        //    foreach (string value in values)
+        //    {
+        //        try
+        //        {
+        //            TimeSpan interval = TimeSpan.Parse(value);
+        //Console.WriteLine("{0} --> {1}", value, interval);
+            //    }
+            //    catch (FormatException)
+            //    {
+            //        Console.WriteLine("{0}: Bad Format", value);
+            //    }
+            //    catch (OverflowException)
+            //    {
+            //        Console.WriteLine("{0}: Overflow", value);
+            //    }
+
+            //}
+
+        }
+
 }
+
